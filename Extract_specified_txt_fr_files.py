@@ -20,6 +20,13 @@
 
     TODO:
         enable regular expression instead of string.startwith function for symbol detection
+
+    Updates:
+        Jul 10 2014: Make changes to the non overlapping stop index. Rm the -1
+                   : Add in dict as results.
+
+    Bug:
+        for line zero case..... not captured.
 """
 
 def join_list_of_str(list_of_str, joined_chars= ''):
@@ -64,11 +71,11 @@ def manage_index_for_start_stop(index_list, overlapping):
         ## For non overlapping
         ## Start will be every odd index and end index will be every even index
         start_index_list = [index_list[n] -1 for n in range(len(index_list)) if n%2 == 0]
-        end_index_list = [index_list[n] - 1 for n in range(len(index_list)) if n%2 == 1]
+        end_index_list = [index_list[n] for n in range(len(index_list)) if n%2 == 1]
 
     ## For debugging -- uncomment to print index
-    ##print start_index_list
-    ##print end_index_list
+##    print start_index_list
+##    print end_index_list
 
     return start_index_list, end_index_list
 
@@ -96,6 +103,7 @@ def para_extract(filename, extract_symbol, overlapping =0 ):
 
         Returns:
             list: List of sentences str
+            dict: dict with index on the list of sentences.
             
     """
 
@@ -107,23 +115,27 @@ def para_extract(filename, extract_symbol, overlapping =0 ):
     start_index_list, end_index_list = manage_index_for_start_stop(index_list, overlapping)
 
     output_list_of_text = []
+    output_dict_of_text = {}
+    output_counter = 1
     for start, end in zip(start_index_list, end_index_list):
         output_list_of_text.append(join_list_of_str(data[start:end]))
+        output_dict_of_text[output_counter] = join_list_of_str(data[start:end])
+        output_counter =  output_counter +1 
 
     #print output_list_of_text
 
-    return output_list_of_text
+    return output_list_of_text, output_dict_of_text
 
 
 
 if __name__ == '__main__':
 
-    choice = [1,2]
+    choice = [1]
 
     if 1 in choice:
-        filename = r'C:\data\temp\tex.txt'
-        key_symbol = '@'
-        q = para_extract(filename, key_symbol, 1 )
+        filename = r'C:\data\temp\htmlread_1.txt'
+        key_symbol = '###'
+        q,t = para_extract(filename, key_symbol, 0 )
 
     if 2 in choice:
         
